@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bakery System</title>
+</head>
+<body>
+  <h1>Bakery Inventory</h1>
+
+<h2>Add Ingredient</h2>
+<form id="ingredient-form">
+  <input type="text" id="name" placeholder="Ingredient Name" required />
+  <input type="number" id="quantity" placeholder="Quantity" required />
+  <input type="text" id="unit" placeholder="Unit (kg, g, etc)" required />
+  <button type="submit">Add</button>
+</form>
+
+<h2>Ingredients List</h2>
+<ul id="ingredient-list"></ul>
+
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>
