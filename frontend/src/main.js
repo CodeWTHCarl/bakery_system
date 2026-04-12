@@ -3,18 +3,28 @@ import './style.css';
 const form = document.getElementById('ingredient-form');
 const list = document.getElementById('ingredient-list');
 
-// LOAD INGREDIENTS (READ/display)
+
+
+
+// LOAD INGREDIENTS (GET - READ/display)
 async function fetchIngredients() {
   const res = await fetch('http://localhost:5000/api/ingredients');
   const data = await res.json();
 
   list.innerHTML = '';
 
+
+
+
+
   data.forEach(item => {
     const li = document.createElement('li');
 
     const text = document.createElement('span');
     text.textContent = `${item.ingredient_name} - ${item.quantity_available} ${item.unit}`;
+
+    
+
 
     // EDIT BUTTON
     const editBtn = document.createElement('button');
@@ -38,6 +48,10 @@ async function fetchIngredients() {
       updateIngredient(item.ingredient_id, newName, newQuantity, newUnit);
     });
 
+
+
+
+
     // DELETE BUTTON
     const deleteBtn = document.createElement('button');
     deleteBtn.textContent = 'Delete';
@@ -57,6 +71,9 @@ async function fetchIngredients() {
     list.appendChild(li);
   });
 }
+
+
+
 
 // CREATE INGREDIENT (Postt)
 form.addEventListener('submit', async (e) => {
@@ -78,6 +95,9 @@ form.addEventListener('submit', async (e) => {
   }
 
 
+
+
+
   //fetch api(HTTP GET requestt) - for create ingredient
   await fetch('http://localhost:5000/api/ingredients', {
     method: 'POST',
@@ -94,6 +114,10 @@ form.addEventListener('submit', async (e) => {
   form.reset();
   fetchIngredients();
 });
+
+
+
+
 
 // UPDATE INGREDIENT (Functionnnn)
 async function updateIngredient(id, name, quantity, unit) {

@@ -16,9 +16,9 @@ app.use(express.json());
 //routes (after middleware)
 app.use('/api/ingredients', ingredientRoutes);
 
-// Test route
+// Test routeee!!!
 app.get('/', (req, res) => {
-  res.send('Backend is running...');
+  res.send('Backend is running naa...');
 });
 
 // Start server (always last mhenn)

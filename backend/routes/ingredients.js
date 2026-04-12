@@ -1,6 +1,10 @@
+
+// my dependenciesss
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
+
+
 
 // CREATE ingredient
 router.post('/', (req, res) => {
@@ -39,6 +43,9 @@ router.get('/', (req, res) => {
     res.json(results);
   });
 });
+
+
+
 
 
 // DELETE ingredient
