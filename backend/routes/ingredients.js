@@ -57,6 +57,27 @@ router.delete('/:id', (req, res) => {
   });
 });
 
+// UPDATE ingredient
+router.put('/:id', (req, res) => {
+  const { id } = req.params;
+  const { ingredient_name, quantity_available, unit } = req.body;
+
+  const sql = `
+    UPDATE ingredients
+    SET ingredient_name = ?, quantity_available = ?, unit = ?
+    WHERE ingredient_id = ?
+  `;
+
+  db.query(sql, [ingredient_name, quantity_available, unit, id], (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Failed to update ingredient' });
+    }
+
+    res.json({ message: 'Ingredient updated successfully' });
+  });
+});
+
 
 //should always be lastt
 module.exports = router;

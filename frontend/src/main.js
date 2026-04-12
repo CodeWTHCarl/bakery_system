@@ -3,7 +3,7 @@ import './style.css';
 const form = document.getElementById('ingredient-form');
 const list = document.getElementById('ingredient-list');
 
-//Load ingredients (READ)
+// LOAD INGREDIENTS (READ/display)
 async function fetchIngredients() {
   const res = await fetch('http://localhost:5000/api/ingredients');
   const data = await res.json();
@@ -11,28 +11,54 @@ async function fetchIngredients() {
   list.innerHTML = '';
 
   data.forEach(item => {
-  const li = document.createElement('li');
+    const li = document.createElement('li');
 
-  li.textContent = `${item.ingredient_name} - ${item.quantity_available} ${item.unit}`;
+    const text = document.createElement('span');
+    text.textContent = `${item.ingredient_name} - ${item.quantity_available} ${item.unit}`;
 
-  // Delete button
-  const btn = document.createElement('button');
-  btn.textContent = 'Delete';
+    // EDIT BUTTON
+    const editBtn = document.createElement('button');
+    editBtn.textContent = 'Edit';
 
-  btn.addEventListener('click', async () => {
-    await fetch(`http://localhost:5000/api/ingredients/${item.ingredient_id}`, {
-      method: 'DELETE'
+    editBtn.addEventListener('click', () => {
+      const newName = prompt('Enter new name:', item.ingredient_name);
+      const newQuantity = prompt('Enter new quantity:', item.quantity_available);
+      const newUnit = prompt('Enter new unit:', item.unit);
+
+      if (!newName || !newQuantity || !newUnit) {
+        alert('All fields are required');
+        return;
+      }
+
+      if (newQuantity <= 0) {
+        alert('Quantity must be greater than 0');
+        return;
+      }
+
+      updateIngredient(item.ingredient_id, newName, newQuantity, newUnit);
     });
 
-    fetchIngredients();
-  });
+    // DELETE BUTTON
+    const deleteBtn = document.createElement('button');
+    deleteBtn.textContent = 'Delete';
 
-  li.appendChild(btn);
-  list.appendChild(li);
-});
+    deleteBtn.addEventListener('click', async () => {
+      await fetch(`http://localhost:5000/api/ingredients/${item.ingredient_id}`, {
+        method: 'DELETE'
+      });
+
+      fetchIngredients();
+    });
+
+    li.appendChild(text);
+    li.appendChild(editBtn);
+    li.appendChild(deleteBtn);
+
+    list.appendChild(li);
+  });
 }
 
-//Add ingredient (CREATE)
+// CREATE INGREDIENT (Postt)
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -40,7 +66,7 @@ form.addEventListener('submit', async (e) => {
   const quantity = document.getElementById('quantity').value;
   const unit = document.getElementById('unit').value.trim();
 
-  //Validation
+  // VALIDATION
   if (!name || !quantity || !unit) {
     alert('Please fill in all fields');
     return;
@@ -51,23 +77,40 @@ form.addEventListener('submit', async (e) => {
     return;
   }
 
-  const ingredient = {
-    ingredient_name: name,
-    quantity_available: quantity,
-    unit: unit
-  };
 
+  //fetch api(HTTP GET requestt) - for create ingredient
   await fetch('http://localhost:5000/api/ingredients', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(ingredient)
+    body: JSON.stringify({
+      ingredient_name: name,
+      quantity_available: quantity,
+      unit: unit
+    })
   });
 
   form.reset();
   fetchIngredients();
 });
 
-// 🔹 Load on start
+// UPDATE INGREDIENT (Functionnnn)
+async function updateIngredient(id, name, quantity, unit) {
+  await fetch(`http://localhost:5000/api/ingredients/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      ingredient_name: name,
+      quantity_available: quantity,
+      unit: unit
+    })
+  });
+
+  fetchIngredients();
+}
+
+// INITIAL LOAD
 fetchIngredients();
