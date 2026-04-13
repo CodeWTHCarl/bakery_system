@@ -50,8 +50,6 @@ async function fetchIngredients() {
 
 
 
-
-
     // DELETE BUTTON
     const deleteBtn = document.createElement('button');
     deleteBtn.textContent = 'Delete';
@@ -71,7 +69,6 @@ async function fetchIngredients() {
     list.appendChild(li);
   });
 }
-
 
 
 
@@ -95,9 +92,6 @@ form.addEventListener('submit', async (e) => {
   }
 
 
-
-
-
   //fetch api(HTTP GET requestt) - for create ingredient
   await fetch('http://localhost:5000/api/ingredients', {
     method: 'POST',
@@ -114,9 +108,6 @@ form.addEventListener('submit', async (e) => {
   form.reset();
   fetchIngredients();
 });
-
-
-
 
 
 // UPDATE INGREDIENT (Functionnnn)
