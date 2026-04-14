@@ -7,17 +7,70 @@
 <body>
   <h1>Bakery Inventory and Ingredient Management System</h1>
 
-<h2>Add Ingredient</h2>
-<form id="ingredient-form">
-  <input type="text" id="name" placeholder="Ingredient Name" required />
-  <input type="number" id="quantity" placeholder="Quantity" required />
-  <input type="text" id="unit" placeholder="Unit (kg, g, etc)" required />
-  <button type="submit">Add</button>
-</form>
+  <!-- INGREDIENT SECTION -->
+  <h2>Add Ingredient</h2>
+  <form id="ingredient-form">
+    <input type="text" id="name" placeholder="Ingredient Name" required />
+    <input type="number" id="quantity" placeholder="Quantity" required />
+    <input type="text" id="unit" placeholder="Unit (kg, g, etc)" required />
+    <button type="submit">Add</button>
+  </form>
 
-<h2>Ingredients List</h2>
-<ul id="ingredient-list"></ul>
+  <h2>Ingredients List</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Quantity</th>
+        <th>Unit</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="ingredient-list"></tbody>
+  </table>
 
-<script type="module" src="/src/main.js"></script>
+  <!-- BREAD SECTION -->
+  <h2>Add Bread</h2>
+  <form id="bread-form">
+    <input type="text" id="bread_name" placeholder="Bread Name" required />
+    <input type="text" id="category" placeholder="Category" />
+    <input type="number" id="price" placeholder="Price" required />
+    <button type="submit">Add Bread</button>
+  </form>
+
+  <h2>Bread List</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Category</th>
+        <th>Price</th>
+      </tr>
+    </thead>
+    <tbody id="bread-list"></tbody>
+  </table>
+
+  <!-- RECIPE SECTION (NEW) -->
+  <h2>Create Recipe</h2>
+  <form id="recipe-form">
+    <select id="bread-select" required></select>
+    <select id="ingredient-select" required></select>
+    <input type="number" id="recipe-quantity" placeholder="Quantity needed" required />
+    <button type="submit">Add to Recipe</button>
+  </form>
+
+  <h2>Recipe List</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Bread</th>
+        <th>Ingredient</th>
+        <th>Quantity</th>
+      </tr>
+    </thead>
+    <tbody id="recipe-list"></tbody>
+  </table>
+
+  <script type="module" src="/src/main.js"></script>
 </body>
 </html>

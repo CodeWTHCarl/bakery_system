@@ -67,3 +67,47 @@ li button {
 li button:hover {
   background: #c23616;
 }
+
+/* ===== TABLE STYLING ===== */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th, td {
+  border: 1px solid #dcdde1;
+  padding: 10px;
+  text-align: left;
+}
+
+th {
+  background: #273c75;
+  color: white;
+}
+
+tr:nth-child(even) {
+  background: #f1f2f6;
+}
+
+/* ===== BUTTONS ===== */
+
+.edit-btn {
+  background: #44bd32;
+  color: white;
+  margin-right: 5px;
+}
+
+.edit-btn:hover {
+  background: #2ecc71;
+}
+
+.delete-btn {
+  background: #e84118;
+  color: white;
+}
+
+.delete-btn:hover {
+  background: #c23616;
+}
