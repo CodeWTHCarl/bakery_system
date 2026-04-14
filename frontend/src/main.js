@@ -1,16 +1,83 @@
 import './style.css';
 
+const role = localStorage.getItem('role');
+
+if (!role) {
+  window.location.href = '/login.html';
+}
+
+// ================= TOAST =================
+function showToast(message, type = 'success') {
+  const container = document.getElementById('toast-container');
+
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = message;
+
+  container.appendChild(toast);
+
+  setTimeout(() => toast.classList.add('show'), 100);
+
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
+// ================= CONFIRM MODAL =================
+let confirmCallback = null;
+
+function showConfirm(message, callback) {
+  const modal = document.getElementById('confirm-modal');
+  const msg = document.getElementById('confirm-message');
+
+  msg.textContent = message;
+  modal.classList.remove('hidden');
+
+  confirmCallback = callback;
+}
+
+document.getElementById('confirm-yes')?.addEventListener('click', () => {
+  if (confirmCallback) confirmCallback();
+  document.getElementById('confirm-modal').classList.add('hidden');
+});
+
+document.getElementById('confirm-no')?.addEventListener('click', () => {
+  document.getElementById('confirm-modal').classList.add('hidden');
+});
+
+// ================= LOG =================
+async function logAction(action) {
+  await fetch('http://localhost:5000/api/logs', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      action,
+      role
+    })
+  });
+}
+
+// INGREDIENT
 const form = document.getElementById('ingredient-form');
 const list = document.getElementById('ingredient-list');
 
+// BREAD
 const breadForm = document.getElementById('bread-form');
 const breadList = document.getElementById('bread-list');
 
-// NEW (RECIPE)
+// RECIPE
 const recipeForm = document.getElementById('recipe-form');
 const recipeList = document.getElementById('recipe-list');
 const breadSelect = document.getElementById('bread-select');
 const ingredientSelect = document.getElementById('ingredient-select');
+
+// BATCH
+const batchForm = document.getElementById('batch-form');
+const batchList = document.getElementById('batch-list');
+const batchBreadSelect = document.getElementById('batch-bread-select');
 
 
 // ================= INGREDIENTS =================
@@ -22,11 +89,14 @@ async function fetchIngredients() {
   ingredientSelect.innerHTML = '';
 
   data.forEach(item => {
-    // TABLE
     const row = document.createElement('tr');
+    const isLow = item.quantity_available <= (item.reorder_level || 100);
+
     row.innerHTML = `
       <td>${item.ingredient_name}</td>
-      <td>${item.quantity_available}</td>
+      <td style="color:${isLow ? 'red' : 'black'}">
+        ${item.quantity_available} ${isLow ? '⚠ LOW' : ''}
+      </td>
       <td>${item.unit}</td>
       <td>
         <button class="edit-btn">Edit</button>
@@ -34,71 +104,32 @@ async function fetchIngredients() {
       </td>
     `;
 
-    // DROPDOWN OPTION
     const option = document.createElement('option');
     option.value = item.ingredient_id;
     option.textContent = item.ingredient_name;
     ingredientSelect.appendChild(option);
 
-    // EDIT
-    row.querySelector('.edit-btn').addEventListener('click', () => {
-      const newName = prompt('Enter new name:', item.ingredient_name);
-      const newQuantity = prompt('Enter new quantity:', item.quantity_available);
-      const newUnit = prompt('Enter new unit:', item.unit);
+    if (role !== 'staff') {
 
-      if (!newName || !newQuantity || !newUnit) return;
+      row.querySelector('.delete-btn').addEventListener('click', () => {
+        showConfirm('Delete this ingredient?', async () => {
+          await fetch(`http://localhost:5000/api/ingredients/${item.ingredient_id}`, {
+            method: 'DELETE'
+          });
 
-      updateIngredient(item.ingredient_id, newName, newQuantity, newUnit);
-    });
-
-    // DELETE
-    row.querySelector('.delete-btn').addEventListener('click', async () => {
-      await fetch(`http://localhost:5000/api/ingredients/${item.ingredient_id}`, {
-        method: 'DELETE'
+          await logAction('Deleted ingredient: ' + item.ingredient_name);
+          showToast('Ingredient deleted');
+          fetchIngredients();
+        });
       });
-      fetchIngredients();
-    });
+
+    } else {
+      row.querySelector('.edit-btn').style.display = 'none';
+      row.querySelector('.delete-btn').style.display = 'none';
+    }
 
     list.appendChild(row);
   });
-}
-
-// CREATE INGREDIENT
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-
-  const name = document.getElementById('name').value.trim();
-  const quantity = document.getElementById('quantity').value;
-  const unit = document.getElementById('unit').value.trim();
-
-  if (!name || !quantity || !unit) return;
-
-  await fetch('http://localhost:5000/api/ingredients', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      ingredient_name: name,
-      quantity_available: quantity,
-      unit: unit
-    })
-  });
-
-  form.reset();
-  fetchIngredients();
-});
-
-async function updateIngredient(id, name, quantity, unit) {
-  await fetch(`http://localhost:5000/api/ingredients/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      ingredient_name: name,
-      quantity_available: quantity,
-      unit: unit
-    })
-  });
-
-  fetchIngredients();
 }
 
 
@@ -109,49 +140,52 @@ async function fetchBreads() {
 
   breadList.innerHTML = '';
   breadSelect.innerHTML = '';
+  batchBreadSelect.innerHTML = '';
 
   data.forEach(item => {
-    // TABLE
     const row = document.createElement('tr');
+
     row.innerHTML = `
       <td>${item.bread_name}</td>
       <td>${item.category || '-'}</td>
       <td>${item.price}</td>
+      <td>
+        <button class="delete-btn">Delete</button>
+      </td>
     `;
+
+    if (role !== 'staff') {
+      row.querySelector('.delete-btn').addEventListener('click', () => {
+        showConfirm('Delete this bread?', async () => {
+          await fetch(`http://localhost:5000/api/breads/${item.bread_id}`, {
+            method: 'DELETE'
+          });
+
+          await logAction('Deleted bread: ' + item.bread_name);
+          showToast('Bread deleted');
+          fetchBreads();
+        });
+      });
+    } else {
+      row.querySelector('.delete-btn').style.display = 'none';
+    }
+
     breadList.appendChild(row);
 
-    // DROPDOWN OPTION
-    const option = document.createElement('option');
-    option.value = item.bread_id;
-    option.textContent = item.bread_name;
-    breadSelect.appendChild(option);
+    const opt1 = document.createElement('option');
+    opt1.value = item.bread_id;
+    opt1.textContent = item.bread_name;
+    breadSelect.appendChild(opt1);
+
+    const opt2 = document.createElement('option');
+    opt2.value = item.bread_id;
+    opt2.textContent = item.bread_name;
+    batchBreadSelect.appendChild(opt2);
   });
 }
 
-// CREATE BREAD
-breadForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-
-  const bread_name = document.getElementById('bread_name').value.trim();
-  const category = document.getElementById('category').value.trim();
-  const price = document.getElementById('price').value;
-
-  if (!bread_name || !price) return;
-
-  await fetch('http://localhost:5000/api/breads', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ bread_name, category, price })
-  });
-
-  breadForm.reset();
-  fetchBreads();
-});
-
 
 // ================= RECIPE =================
-
-// LOAD RECIPES
 async function fetchRecipes() {
   const res = await fetch('http://localhost:5000/api/recipes');
   const data = await res.json();
@@ -165,30 +199,53 @@ async function fetchRecipes() {
       <td>${item.bread_name}</td>
       <td>${item.ingredient_name}</td>
       <td>${item.quantity}</td>
+      <td>
+        <button class="delete-btn">Delete</button>
+      </td>
     `;
+
+    if (role !== 'staff') {
+      row.querySelector('.delete-btn').addEventListener('click', () => {
+        showConfirm('Delete this recipe?', async () => {
+          await fetch(`http://localhost:5000/api/recipes/${item.recipe_id}`, {
+            method: 'DELETE'
+          });
+
+          await logAction('Deleted recipe');
+          showToast('Recipe deleted');
+          fetchRecipes();
+        });
+      });
+    } else {
+      row.querySelector('.delete-btn').style.display = 'none';
+    }
 
     recipeList.appendChild(row);
   });
 }
 
-// CREATE RECIPE
-recipeForm.addEventListener('submit', async (e) => {
+
+// ================= BATCH =================
+batchForm?.addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  const bread_id = breadSelect.value;
-  const ingredient_id = ingredientSelect.value;
-  const quantity = document.getElementById('recipe-quantity').value;
+  const bread_id = document.getElementById('batch-bread-select').value;
+  const quantity = document.getElementById('batch-quantity').value;
+  const baking_date = document.getElementById('baking-date').value;
+  const expiry_date = document.getElementById('expiry-date').value;
+  const status = document.getElementById('status').value;
 
-  if (!bread_id || !ingredient_id || !quantity) return;
-
-  await fetch('http://localhost:5000/api/recipes', {
+  await fetch('http://localhost:5000/api/batch', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ bread_id, ingredient_id, quantity })
+    body: JSON.stringify({ bread_id, quantity, baking_date, expiry_date, status })
   });
 
-  recipeForm.reset();
-  fetchRecipes();
+  await logAction('Recorded batch');
+  showToast('Batch recorded');
+
+  batchForm.reset();
+  fetchBatches();
 });
 
 
@@ -196,3 +253,5 @@ recipeForm.addEventListener('submit', async (e) => {
 fetchIngredients();
 fetchBreads();
 fetchRecipes();
+fetchBatches();
+loadDashboard();

@@ -3,74 +3,256 @@
 <head>
   <meta charset="UTF-8" />
   <title>Bakery System</title>
+  <link rel="stylesheet" href="/src/style.css">
 </head>
 <body>
-  <h1>Bakery Inventory and Ingredient Management System</h1>
 
-  <!-- INGREDIENT SECTION -->
-  <h2>Add Ingredient</h2>
-  <form id="ingredient-form">
-    <input type="text" id="name" placeholder="Ingredient Name" required />
-    <input type="number" id="quantity" placeholder="Quantity" required />
-    <input type="text" id="unit" placeholder="Unit (kg, g, etc)" required />
-    <button type="submit">Add</button>
-  </form>
+<div class="container">
 
-  <h2>Ingredients List</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Quantity</th>
-        <th>Unit</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody id="ingredient-list"></tbody>
-  </table>
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <h2>Bakery System</h2>
 
-  <!-- BREAD SECTION -->
-  <h2>Add Bread</h2>
-  <form id="bread-form">
-    <input type="text" id="bread_name" placeholder="Bread Name" required />
-    <input type="text" id="category" placeholder="Category" />
-    <input type="number" id="price" placeholder="Price" required />
-    <button type="submit">Add Bread</button>
-  </form>
+    <p id="user-role" style="margin-bottom:10px;"></p>
 
-  <h2>Bread List</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Category</th>
-        <th>Price</th>
-      </tr>
-    </thead>
-    <tbody id="bread-list"></tbody>
-  </table>
+    <ul>
+      <li onclick="showSection('dashboard')">Dashboard</li>
+      <li onclick="showSection('ingredients')">Ingredients</li>
+      <li onclick="showSection('breads')">Bread</li>
+      <li onclick="showSection('recipes')">Recipes</li>
+      <li onclick="showSection('batch')">Production</li>
+      <li onclick="showSection('logs')">Activity Logs</li>
+    </ul>
 
-  <!-- RECIPE SECTION (NEW) -->
-  <h2>Create Recipe</h2>
-  <form id="recipe-form">
-    <select id="bread-select" required></select>
-    <select id="ingredient-select" required></select>
-    <input type="number" id="recipe-quantity" placeholder="Quantity needed" required />
-    <button type="submit">Add to Recipe</button>
-  </form>
+    <button onclick="logout()" style="margin-top:20px; width:100%;">Logout</button>
+  </aside>
 
-  <h2>Recipe List</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Bread</th>
-        <th>Ingredient</th>
-        <th>Quantity</th>
-      </tr>
-    </thead>
-    <tbody id="recipe-list"></tbody>
-  </table>
+  <!-- MAIN CONTENT -->
+  <main class="main">
 
-  <script type="module" src="/src/main.js"></script>
+    <!-- DASHBOARD -->
+    <section id="dashboard" class="section">
+      <h2 class="section-title">Dashboard</h2>
+
+      <div id="stats">
+        <div class="card">
+          <h3>Total Ingredients</h3>
+          <p id="total-ingredients">0</p>
+        </div>
+
+        <div class="card highlight">
+          <h3>Low Stock</h3>
+          <p id="low-stock">0</p>
+        </div>
+
+        <div class="card">
+          <h3>Total Breads</h3>
+          <p id="total-breads">0</p>
+        </div>
+
+        <div class="card">
+          <h3>Total Batches</h3>
+          <p id="total-batches">0</p>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- INGREDIENTS -->
+    <section id="ingredients" class="section hidden">
+      <h2 class="section-title">Ingredients</h2>
+
+      <div class="card form-card">
+        <h3>Add Ingredient</h3>
+        <form id="ingredient-form">
+          <input type="text" id="name" placeholder="Name" required />
+          <input type="number" id="quantity" placeholder="Quantity" required />
+          <input type="text" id="unit" placeholder="Unit" required />
+          <button>Add</button>
+        </form>
+      </div>
+
+      <div class="card table-card">
+        <h3>Ingredient List</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Quantity</th>
+              <th>Unit</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="ingredient-list"></tbody>
+        </table>
+      </div>
+    </section>
+
+
+    <!-- BREAD -->
+    <section id="breads" class="section hidden">
+      <h2 class="section-title">Bread</h2>
+
+      <div class="card form-card">
+        <h3>Add Bread</h3>
+        <form id="bread-form">
+          <input type="text" id="bread_name" placeholder="Name" required />
+          <input type="text" id="category" placeholder="Category" />
+          <input type="number" id="price" placeholder="Price" required />
+          <button>Add</button>
+        </form>
+      </div>
+
+      <div class="card table-card">
+        <h3>Bread List</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="bread-list"></tbody>
+        </table>
+      </div>
+    </section>
+
+
+    <!-- RECIPES -->
+    <section id="recipes" class="section hidden">
+      <h2 class="section-title">Recipes</h2>
+
+      <div class="card form-card">
+        <h3>Add Recipe</h3>
+        <form id="recipe-form">
+          <select id="bread-select"></select>
+          <select id="ingredient-select"></select>
+          <input type="number" id="recipe-quantity" placeholder="Quantity" required />
+          <button>Add</button>
+        </form>
+      </div>
+
+      <div class="card table-card">
+        <h3>Recipe List</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Bread</th>
+              <th>Ingredient</th>
+              <th>Quantity</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="recipe-list"></tbody>
+        </table>
+      </div>
+    </section>
+
+
+    <!-- BATCH -->
+    <section id="batch" class="section hidden">
+      <h2 class="section-title">Production</h2>
+
+      <div class="card form-card">
+        <h3>Record Batch</h3>
+        <form id="batch-form">
+          <select id="batch-bread-select"></select>
+          <input type="number" id="batch-quantity" placeholder="Quantity" required />
+          <input type="date" id="baking-date" required />
+          <input type="date" id="expiry-date" required />
+          <select id="status">
+            <option>Available</option>
+            <option>Sold</option>
+          </select>
+          <button>Record</button>
+        </form>
+      </div>
+
+      <div class="card table-card">
+        <h3>Batch Records</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Bread</th>
+              <th>Qty</th>
+              <th>Baking</th>
+              <th>Expiry</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="batch-list"></tbody>
+        </table>
+      </div>
+    </section>
+
+
+    <!-- LOGS -->
+    <section id="logs" class="section hidden">
+      <h2 class="section-title">Activity Logs</h2>
+
+      <div class="card table-card">
+        <h3>System Logs</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Action</th>
+              <th>Role</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody id="log-list"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- SECTION SWITCH -->
+<script>
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(sec => {
+    sec.classList.add('hidden');
+  });
+  document.getElementById(id).classList.remove('hidden');
+
+  if (id === 'logs') {
+    fetchLogs();
+  }
+}
+</script>
+
+<!-- ROLE -->
+<script>
+const role = localStorage.getItem('role');
+if (role) {
+  document.getElementById('user-role').textContent = "Role: " + role.toUpperCase();
+}
+</script>
+
+<!-- LOGOUT -->
+<script>
+function logout() {
+  localStorage.removeItem('role');
+  window.location.href = '/login.html';
+}
+</script>
+
+<script type="module" src="/src/main.js"></script>
+
+<div id="toast-container"></div>
+
+<div id="confirm-modal" class="modal hidden">
+  <div class="modal-content">
+    <p id="confirm-message">Are you sure?</p>
+    <div class="modal-actions">
+      <button id="confirm-yes">Yes</button>
+      <button id="confirm-no">Cancel</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

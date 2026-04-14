@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login - Bakery System</title>
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+
+<div style="display:flex; justify-content:center; align-items:center; height:100vh;">
+
+  <div style="background:white; padding:30px; border-radius:10px; width:300px;">
+    
+    <h2 style="text-align:center;">Login</h2>
+
+    <input id="username" placeholder="Username" style="width:100%; margin-bottom:10px;">
+    <input id="password" type="password" placeholder="Password" style="width:100%; margin-bottom:10px;">
+
+    <button onclick="login()" style="width:100%;">Login</button>
+
+    <!-- INLINE ERROR -->
+    <p id="error" style="color:red; margin-top:10px; text-align:center;"></p>
+
+  </div>
+
+</div>
+
+<script>
+// 🔥 AUTO REDIRECT IF ALREADY LOGGED IN
+const role = localStorage.getItem('role');
+if (role) {
+  window.location.href = '/index.html';
+}
+
+async function login() {
+  const username = document.getElementById('username').value;
+  const password = document.getElementById('password').value;
+  const errorBox = document.getElementById('error');
+
+  errorBox.textContent = '';
+
+  const res = await fetch('http://localhost:5000/api/auth/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ username, password })
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    errorBox.textContent = data.error;
+    return;
+  }
+
+  localStorage.setItem('role', data.role);
+
+  window.location.href = '/index.html';
+}
+</script>
+
+</body>
+</html>

@@ -38,4 +38,43 @@ router.get('/', (req, res) => {
   });
 });
 
+
+// UPDATE bread
+router.put('/:id', (req, res) => {
+  const { id } = req.params;
+  const { bread_name, category, price } = req.body;
+
+  const sql = `
+    UPDATE bread_catalog
+    SET bread_name = ?, category = ?, price = ?
+    WHERE bread_id = ?
+  `;
+
+  db.query(sql, [bread_name, category, price, id], (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Failed to update bread' });
+    }
+
+    res.json({ message: 'Bread updated successfully' });
+  });
+});
+
+
+// DELETE bread
+router.delete('/:id', (req, res) => {
+  const { id } = req.params;
+
+  const sql = `DELETE FROM bread_catalog WHERE bread_id = ?`;
+
+  db.query(sql, [id], (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Failed to delete bread' });
+    }
+
+    res.json({ message: 'Bread deleted successfully' });
+  });
+});
+
 module.exports = router;
