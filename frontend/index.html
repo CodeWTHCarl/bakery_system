@@ -4,52 +4,84 @@
   <meta charset="UTF-8" />
   <title>Bakery System</title>
   <link rel="stylesheet" href="/src/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
 </head>
 <body>
 
 <div class="container">
 
-  <!-- SIDEBAR -->
+  <!-- ════════════════════════════════
+       SIDEBAR
+  ════════════════════════════════ -->
   <aside class="sidebar">
-    <h2>Bakery System</h2>
 
-    <p id="user-role" style="margin-bottom:10px;"></p>
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-icon">🍞</div>
+      <div>
+        <h2>Artisan</h2>
+        <span>Bakery System</span>
+      </div>
+    </div>
+
+    <!-- Role + username badge -->
+    <div class="sidebar-role">
+      <span class="sidebar-role-label">Logged in as</span>
+      <span id="user-name" style="font-size:13px; color:white; font-weight:500; display:block; margin-bottom:2px;"></span>
+      <span id="user-role"></span>
+    </div>
 
     <ul>
-      <li onclick="showSection('dashboard')">Dashboard</li>
-      <li onclick="showSection('ingredients')">Ingredients</li>
-      <li onclick="showSection('breads')">Bread</li>
-      <li onclick="showSection('recipes')">Recipes</li>
-      <li onclick="showSection('batch')">Production</li>
-      <li onclick="showSection('logs')">Activity Logs</li>
+      <li onclick="showSection('dashboard')" class="active">
+        <span class="nav-icon">📊</span> Dashboard
+      </li>
+      <li onclick="showSection('ingredients')">
+        <span class="nav-icon">🌾</span> Ingredients
+      </li>
+      <li onclick="showSection('breads')">
+        <span class="nav-icon">🍞</span> Bread
+      </li>
+      <li onclick="showSection('recipes')">
+        <span class="nav-icon">📋</span> Recipes
+      </li>
+      <li onclick="showSection('batch')">
+        <span class="nav-icon">⚙️</span> Production
+      </li>
+      <li onclick="showSection('logs')">
+        <span class="nav-icon">📝</span> Logs
+      </li>
+      <!-- Admin only nav item -->
+      <li onclick="showSection('users')" class="admin-only">
+        <span class="nav-icon">👥</span> Users
+      </li>
     </ul>
 
-    <button onclick="logout()" style="margin-top:20px; width:100%;">Logout</button>
+    <div class="sidebar-logout">
+      <button onclick="logout()">🚪 &nbsp;Logout</button>
+    </div>
+
   </aside>
 
-  <!-- MAIN CONTENT -->
+  <!-- ════════════════════════════════
+       MAIN
+  ════════════════════════════════ -->
   <main class="main">
 
     <!-- DASHBOARD -->
     <section id="dashboard" class="section">
       <h2 class="section-title">Dashboard</h2>
-
       <div id="stats">
         <div class="card">
           <h3>Total Ingredients</h3>
           <p id="total-ingredients">0</p>
         </div>
-
         <div class="card highlight">
-          <h3>Low Stock</h3>
+          <h3>⚠ Low Stock</h3>
           <p id="low-stock">0</p>
         </div>
-
         <div class="card">
           <h3>Total Breads</h3>
           <p id="total-breads">0</p>
         </div>
-
         <div class="card">
           <h3>Total Batches</h3>
           <p id="total-batches">0</p>
@@ -57,152 +89,129 @@
       </div>
     </section>
 
-
     <!-- INGREDIENTS -->
     <section id="ingredients" class="section hidden">
       <h2 class="section-title">Ingredients</h2>
-
-      <div class="card form-card">
+      <div class="card">
         <h3>Add Ingredient</h3>
         <form id="ingredient-form">
-          <input type="text" id="name" placeholder="Name" required />
-          <input type="number" id="quantity" placeholder="Quantity" required />
-          <input type="text" id="unit" placeholder="Unit" required />
-          <button>Add</button>
+          <input type="text"   id="name"     placeholder="Ingredient name"  required />
+          <input type="number" id="quantity" placeholder="Quantity"         required />
+          <input type="text"   id="unit"     placeholder="Unit (kg, g, L…)" required />
+          <button type="submit">Add Ingredient</button>
         </form>
       </div>
-
-      <div class="card table-card">
+      <div class="card">
         <h3>Ingredient List</h3>
         <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Quantity</th>
-              <th>Unit</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
+          <thead><tr><th>Name</th><th>Quantity</th><th>Unit</th><th>Actions</th></tr></thead>
           <tbody id="ingredient-list"></tbody>
         </table>
       </div>
     </section>
 
-
     <!-- BREAD -->
     <section id="breads" class="section hidden">
       <h2 class="section-title">Bread</h2>
-
-      <div class="card form-card">
+      <div class="card">
         <h3>Add Bread</h3>
         <form id="bread-form">
-          <input type="text" id="bread_name" placeholder="Name" required />
-          <input type="text" id="category" placeholder="Category" />
-          <input type="number" id="price" placeholder="Price" required />
-          <button>Add</button>
+          <input type="text"   id="bread_name" placeholder="Bread name" required />
+          <input type="text"   id="category"   placeholder="Category" />
+          <input type="number" id="price"       placeholder="Price"    required />
+          <button type="submit">Add Bread</button>
         </form>
       </div>
-
-      <div class="card table-card">
+      <div class="card">
         <h3>Bread List</h3>
         <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Category</th>
-              <th>Price</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
+          <thead><tr><th>Name</th><th>Category</th><th>Price</th><th>Actions</th></tr></thead>
           <tbody id="bread-list"></tbody>
         </table>
       </div>
     </section>
 
-
     <!-- RECIPES -->
     <section id="recipes" class="section hidden">
       <h2 class="section-title">Recipes</h2>
-
-      <div class="card form-card">
+      <div class="card">
         <h3>Add Recipe</h3>
         <form id="recipe-form">
           <select id="bread-select"></select>
           <select id="ingredient-select"></select>
           <input type="number" id="recipe-quantity" placeholder="Quantity" required />
-          <button>Add</button>
+          <button type="submit">Add Recipe</button>
         </form>
       </div>
-
-      <div class="card table-card">
+      <div class="card">
         <h3>Recipe List</h3>
         <table>
-          <thead>
-            <tr>
-              <th>Bread</th>
-              <th>Ingredient</th>
-              <th>Quantity</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
+          <thead><tr><th>Bread</th><th>Ingredient</th><th>Quantity</th><th>Actions</th></tr></thead>
           <tbody id="recipe-list"></tbody>
         </table>
       </div>
     </section>
 
-
     <!-- BATCH -->
     <section id="batch" class="section hidden">
       <h2 class="section-title">Production</h2>
-
-      <div class="card form-card">
+      <div class="card">
         <h3>Record Batch</h3>
         <form id="batch-form">
           <select id="batch-bread-select"></select>
-          <input type="number" id="batch-quantity" placeholder="Quantity" required />
-          <input type="date" id="baking-date" required />
-          <input type="date" id="expiry-date" required />
+          <input type="number" id="batch-quantity" placeholder="Quantity"    required />
+          <input type="date"   id="baking-date"                             required />
+          <input type="date"   id="expiry-date"                             required />
           <select id="status">
             <option>Available</option>
             <option>Sold</option>
           </select>
-          <button>Record</button>
+          <button type="submit">Record Batch</button>
         </form>
       </div>
-
-      <div class="card table-card">
+      <div class="card">
         <h3>Batch Records</h3>
         <table>
-          <thead>
-            <tr>
-              <th>Bread</th>
-              <th>Qty</th>
-              <th>Baking</th>
-              <th>Expiry</th>
-              <th>Status</th>
-            </tr>
-          </thead>
+          <thead><tr><th>Bread</th><th>Qty</th><th>Baking Date</th><th>Expiry Date</th><th>Status</th></tr></thead>
           <tbody id="batch-list"></tbody>
         </table>
       </div>
     </section>
 
-
     <!-- LOGS -->
     <section id="logs" class="section hidden">
       <h2 class="section-title">Activity Logs</h2>
-
-      <div class="card table-card">
+      <div class="card">
         <h3>System Logs</h3>
         <table>
-          <thead>
-            <tr>
-              <th>Action</th>
-              <th>Role</th>
-              <th>Time</th>
-            </tr>
-          </thead>
+          <thead><tr><th>Action</th><th>Role</th><th>Time</th></tr></thead>
           <tbody id="log-list"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- USERS (Admin only) -->
+    <section id="users" class="section hidden">
+      <h2 class="section-title">User Management</h2>
+
+      <div class="card admin-only">
+        <h3>Create New Account</h3>
+        <form id="add-user-form">
+          <input type="text"     id="new-username" placeholder="Username"        required />
+          <input type="password" id="new-password" placeholder="Password (min 6 chars)" required />
+          <select id="new-role">
+            <option value="staff">Staff</option>
+            <option value="admin">Admin</option>
+          </select>
+          <button type="submit">Create User</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h3>System Users</h3>
+        <table>
+          <thead><tr><th>Username</th><th>Role</th><th>Actions</th></tr></thead>
+          <tbody id="user-list"></tbody>
         </table>
       </div>
     </section>
@@ -210,49 +219,53 @@
   </main>
 </div>
 
-<!-- SECTION SWITCH -->
-<script>
-function showSection(id) {
-  document.querySelectorAll('.section').forEach(sec => {
-    sec.classList.add('hidden');
-  });
-  document.getElementById(id).classList.remove('hidden');
+<div id="toast-container"></div>
 
-  if (id === 'logs') {
-    fetchLogs();
-  }
+<div id="confirm-modal" class="modal hidden">
+  <div class="modal-content">
+    <span class="modal-icon">⚠️</span>
+    <p id="confirm-message">Are you sure?</p>
+    <p class="modal-subtitle">This action cannot be undone.</p>
+    <div class="modal-actions">
+      <button id="confirm-no">Cancel</button>
+      <button id="confirm-yes">Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── SECTION SWITCH ── -->
+<script>
+const sectionOrder = ['dashboard','ingredients','breads','recipes','batch','logs','users'];
+
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(sec => sec.classList.add('hidden'));
+  document.getElementById(id)?.classList.remove('hidden');
+
+  document.querySelectorAll('.sidebar li').forEach((li, i) => {
+    li.classList.toggle('active', sectionOrder[i] === id);
+  });
+
+  if (id === 'logs')  window.fetchLogs?.();
+  if (id === 'users') window.fetchUsers?.();
 }
 </script>
 
-<!-- ROLE -->
+<!-- ── ROLE ── -->
 <script>
 const role = localStorage.getItem('role');
 if (role) {
-  document.getElementById('user-role').textContent = "Role: " + role.toUpperCase();
+  document.getElementById('user-role').textContent = role.toUpperCase();
 }
 </script>
 
-<!-- LOGOUT -->
+<!-- ── LOGOUT ── -->
 <script>
 function logout() {
-  localStorage.removeItem('role');
+  localStorage.clear();
   window.location.href = '/login.html';
 }
 </script>
 
 <script type="module" src="/src/main.js"></script>
-
-<div id="toast-container"></div>
-
-<div id="confirm-modal" class="modal hidden">
-  <div class="modal-content">
-    <p id="confirm-message">Are you sure?</p>
-    <div class="modal-actions">
-      <button id="confirm-yes">Yes</button>
-      <button id="confirm-no">Cancel</button>
-    </div>
-  </div>
-</div>
-
 </body>
 </html>

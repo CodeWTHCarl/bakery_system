@@ -2,63 +2,545 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Login - Bakery System</title>
-  <link rel="stylesheet" href="/src/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign In — Bakery System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── STAGE ─────────────────────────────────────────────────── */
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'DM Sans', sans-serif;
+      background: #070403;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Animated aurora orbs */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(90px);
+      pointer-events: none;
+      animation: pulse 10s ease-in-out infinite alternate;
+    }
+    .orb-1 {
+      width: 600px; height: 600px;
+      top: -180px; left: -140px;
+      background: radial-gradient(circle, rgba(180,120,30,0.22) 0%, transparent 70%);
+      animation-delay: 0s;
+    }
+    .orb-2 {
+      width: 500px; height: 500px;
+      bottom: -160px; right: -120px;
+      background: radial-gradient(circle, rgba(160,100,20,0.18) 0%, transparent 70%);
+      animation-delay: 3s;
+    }
+    .orb-3 {
+      width: 320px; height: 320px;
+      top: 40%; left: 55%;
+      background: radial-gradient(circle, rgba(200,140,40,0.10) 0%, transparent 70%);
+      animation-delay: 6s;
+    }
+
+    @keyframes pulse {
+      from { transform: scale(1) translate(0, 0); opacity: 0.8; }
+      to   { transform: scale(1.15) translate(20px, -20px); opacity: 1; }
+    }
+
+    /* Subtle grid overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── CARD ───────────────────────────────────────────────────── */
+    .card {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 440px;
+      background: #FAF6EF;
+      border-radius: 28px;
+      padding: 52px 48px 44px;
+      box-shadow:
+        0 0 0 1px rgba(200,151,58,0.15),
+        0 30px 80px rgba(0,0,0,0.55),
+        0 8px 24px rgba(0,0,0,0.30);
+      animation: cardIn 0.6s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(32px) scale(0.96); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* ── HEADER ─────────────────────────────────────────────────── */
+    .card-header {
+      text-align: center;
+      margin-bottom: 38px;
+    }
+
+    .logo-wrap {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 70px; height: 70px;
+      background: linear-gradient(135deg, #1C1108 0%, #3B2408 100%);
+      border-radius: 20px;
+      font-size: 34px;
+      margin-bottom: 22px;
+      box-shadow:
+        0 8px 24px rgba(0,0,0,0.22),
+        0 0 0 1px rgba(200,151,58,0.25);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .logo-wrap::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(200,151,58,0.12), transparent);
+    }
+
+    .card-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: #1C1108;
+      letter-spacing: 0.2px;
+      line-height: 1.2;
+      margin-bottom: 5px;
+    }
+
+    .card-header p {
+      font-size: 12px;
+      color: #A89880;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 300;
+    }
+
+    /* Decorative divider */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #E2D5C3, transparent);
+    }
+    .divider span {
+      font-size: 18px;
+      opacity: 0.4;
+    }
+
+    /* ── FORM ───────────────────────────────────────────────────── */
+
+    /* Floating label field */
+    .field {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .field label {
+      position: absolute;
+      top: 50%;
+      left: 15px;
+      transform: translateY(-50%);
+      font-size: 14px;
+      color: #A89880;
+      pointer-events: none;
+      transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+      background: transparent;
+      padding: 0 4px;
+      font-weight: 300;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 16px 15px 8px;
+      border-radius: 10px;
+      border: 1.5px solid #E2D5C3;
+      background: #FFFFFF;
+      color: #1C1108;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      outline: none;
+      transition: all 0.22s ease;
+      appearance: none;
+    }
+
+    /* Float label up when focused or has value */
+    .field input:focus + label,
+    .field input:not(:placeholder-shown) + label {
+      top: 10px;
+      transform: translateY(0);
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #C8973A;
+      font-weight: 500;
+    }
+
+    .field input:focus {
+      border-color: #C8973A;
+      box-shadow: 0 0 0 3px rgba(200,151,58,0.12);
+    }
+
+    /* Password field with toggle */
+    .field-password {
+      position: relative;
+    }
+
+    .field-password input {
+      padding-right: 48px;
+    }
+
+    .toggle-pw {
+      position: absolute;
+      top: 50%;
+      right: 14px;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #A89880;
+      font-size: 16px;
+      padding: 4px;
+      transition: color 0.2s ease;
+      line-height: 1;
+      /* override global button styles */
+      box-shadow: none !important;
+      transform: translateY(-50%) !important;
+    }
+
+    .toggle-pw:hover {
+      color: #C8973A;
+      background: none !important;
+      box-shadow: none !important;
+    }
+
+    /* Remember me row */
+    .remember-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .remember-row input[type="checkbox"] {
+      width: 16px; height: 16px;
+      accent-color: #C8973A;
+      cursor: pointer;
+      flex: none;
+      min-width: unset;
+      padding: 0;
+      border-radius: 4px;
+    }
+
+    .remember-row label {
+      font-size: 13px;
+      color: #7B6B5A;
+      cursor: pointer;
+      font-weight: 300;
+      user-select: none;
+    }
+
+    /* Submit button */
+    .btn-submit {
+      width: 100%;
+      padding: 15px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, #1C1108 0%, #2E1E0F 100%);
+      color: #FAF6EF;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      letter-spacing: 0.4px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-submit::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #C8973A, #E8B86D);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .btn-submit:hover::before { opacity: 1; }
+
+    .btn-submit span, .btn-submit .spinner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(200,151,58,0.40);
+    }
+
+    .btn-submit:active {
+      transform: scale(0.98);
+      box-shadow: none;
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Spinner */
+    .spinner {
+      display: none;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .btn-submit.loading .btn-text { display: none; }
+    .btn-submit.loading .spinner  { display: block; }
+
+    /* Error box */
+    #error {
+      margin-top: 16px;
+      padding: 0;
+      border-radius: 10px;
+      font-size: 13px;
+      text-align: center;
+      color: #B83232;
+      transition: all 0.25s ease;
+      min-height: 0;
+      overflow: hidden;
+      max-height: 0;
+    }
+
+    #error.visible {
+      padding: 11px 14px;
+      background: #FDECEA;
+      border: 1px solid rgba(184,50,50,0.15);
+      max-height: 80px;
+    }
+
+    /* ── FOOTER ─────────────────────────────────────────────────── */
+    .card-footer {
+      margin-top: 32px;
+      text-align: center;
+    }
+
+    .card-footer p {
+      font-size: 11px;
+      color: #C0AD9A;
+      font-weight: 300;
+      letter-spacing: 0.3px;
+    }
+
+    /* ── RESPONSIVE ─────────────────────────────────────────────── */
+    @media (max-width: 480px) {
+      .card { padding: 40px 28px 36px; border-radius: 20px; margin: 16px; }
+    }
+  </style>
 </head>
 <body>
 
-<div style="display:flex; justify-content:center; align-items:center; height:100vh;">
+  <!-- Background orbs -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
 
-  <div style="background:white; padding:30px; border-radius:10px; width:300px;">
-    
-    <h2 style="text-align:center;">Login</h2>
+  <!-- Main card -->
+  <div class="card">
 
-    <input id="username" placeholder="Username" style="width:100%; margin-bottom:10px;">
-    <input id="password" type="password" placeholder="Password" style="width:100%; margin-bottom:10px;">
+    <!-- Header -->
+    <div class="card-header">
+      <div class="logo-wrap">🍞</div>
+      <h1>Artisan Bakery</h1>
+      <p>Management System</p>
+    </div>
 
-    <button onclick="login()" style="width:100%;">Login</button>
+    <!-- Divider -->
+    <div class="divider"><span>✦</span></div>
 
-    <!-- INLINE ERROR -->
-    <p id="error" style="color:red; margin-top:10px; text-align:center;"></p>
+    <!-- Username -->
+    <div class="field">
+      <input
+        id="username"
+        type="text"
+        placeholder=" "
+        autocomplete="username"
+      />
+      <label for="username">Username</label>
+    </div>
+
+    <!-- Password -->
+    <div class="field field-password">
+      <input
+        id="password"
+        type="password"
+        placeholder=" "
+        autocomplete="current-password"
+      />
+      <label for="password">Password</label>
+      <button class="toggle-pw" type="button" onclick="togglePassword()" title="Show/hide password">
+        <span id="pw-icon">👁</span>
+      </button>
+    </div>
+
+    <!-- Remember me -->
+    <div class="remember-row">
+      <input type="checkbox" id="remember" />
+      <label for="remember">Keep me signed in</label>
+    </div>
+
+    <!-- Submit -->
+    <button class="btn-submit" id="login-btn" onclick="login()">
+      <span class="btn-text">Sign In</span>
+      <div class="spinner"></div>
+    </button>
+
+    <!-- Error -->
+    <div id="error"></div>
+
+    <!-- Footer -->
+    <div class="card-footer">
+      <p>🔒 Authorized personnel only &nbsp;·&nbsp; © 2026 Artisan Bakery</p>
+    </div>
 
   </div>
 
-</div>
+  <script>
+    // ── AUTO-REDIRECT IF ALREADY LOGGED IN ──────────────────────
+    const token = localStorage.getItem('token');
+    if (token) {
+      window.location.href = '/index.html';
+    }
 
-<script>
-// 🔥 AUTO REDIRECT IF ALREADY LOGGED IN
-const role = localStorage.getItem('role');
-if (role) {
-  window.location.href = '/index.html';
-}
+    // ── PASSWORD TOGGLE ──────────────────────────────────────────
+    function togglePassword() {
+      const input = document.getElementById('password');
+      const icon  = document.getElementById('pw-icon');
+      const isHidden = input.type === 'password';
+      input.type = isHidden ? 'text' : 'password';
+      icon.textContent = isHidden ? '🙈' : '👁';
+    }
 
-async function login() {
-  const username = document.getElementById('username').value;
-  const password = document.getElementById('password').value;
-  const errorBox = document.getElementById('error');
+    // ── ENTER KEY SUPPORT ────────────────────────────────────────
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') login();
+    });
 
-  errorBox.textContent = '';
+    // ── LOGIN ────────────────────────────────────────────────────
+    async function login() {
+      const username  = document.getElementById('username').value.trim();
+      const password  = document.getElementById('password').value;
+      const remember  = document.getElementById('remember').checked;
+      const errorBox  = document.getElementById('error');
+      const btn       = document.getElementById('login-btn');
 
-  const res = await fetch('http://localhost:5000/api/auth/login', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ username, password })
-  });
+      // Clear error
+      errorBox.textContent = '';
+      errorBox.classList.remove('visible');
 
-  const data = await res.json();
+      if (!username || !password) {
+        showError('Please enter your username and password.');
+        return;
+      }
 
-  if (!res.ok) {
-    errorBox.textContent = data.error;
-    return;
-  }
+      // Loading state
+      btn.classList.add('loading');
+      btn.disabled = true;
 
-  localStorage.setItem('role', data.role);
+      try {
+        const res  = await fetch('http://localhost:5000/api/auth/login', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ username, password })
+        });
 
-  window.location.href = '/index.html';
-}
-</script>
+        const data = await res.json();
 
+        if (!res.ok) {
+          showError(data.error || 'Login failed. Please try again.');
+          return;
+        }
+
+        // ── Store token and role ─────────────────────────────────
+        const storage = remember ? localStorage : sessionStorage;
+        storage.setItem('token',    data.token);
+        storage.setItem('role',     data.role);
+        storage.setItem('username', data.username);
+
+        // Always put token in localStorage so other pages can access it
+        localStorage.setItem('token',    data.token);
+        localStorage.setItem('role',     data.role);
+        localStorage.setItem('username', data.username);
+
+        window.location.href = '/index.html';
+
+      } catch (err) {
+        showError('Cannot reach the server. Make sure the backend is running.');
+      } finally {
+        btn.classList.remove('loading');
+        btn.disabled = false;
+      }
+    }
+
+    function showError(msg) {
+      const errorBox = document.getElementById('error');
+      errorBox.textContent = msg;
+      errorBox.classList.add('visible');
+
+      // Shake animation
+      const card = document.querySelector('.card');
+      card.style.animation = 'none';
+      card.offsetHeight; // reflow
+      card.style.animation = 'shake 0.4s ease';
+    }
+
+    // Add shake keyframe dynamically
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes shake {
+        0%,100% { transform: translateX(0); }
+        20%      { transform: translateX(-8px); }
+        40%      { transform: translateX(8px); }
+        60%      { transform: translateX(-5px); }
+        80%      { transform: translateX(5px); }
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
 </body>
 </html>
