@@ -5,24 +5,24 @@ const role     = localStorage.getItem('role');
 const token    = localStorage.getItem('token');
 const username = localStorage.getItem('username');
 
-// ── Auth guard ────────────────────────────────────────────────
+//Auth guard
 if (!token || !role) {
   window.location.href = '/login.html';
 }
 
-// ── Show username in sidebar ──────────────────────────────────
+//Show username in sidebar
 const userRoleEl = document.getElementById('user-role');
 if (userRoleEl) userRoleEl.textContent = role.toUpperCase();
 
 const userNameEl = document.getElementById('user-name');
 if (userNameEl) userNameEl.textContent = username || '';
 
-// ── Show/hide admin-only nav items ────────────────────────────
+//Show/hide admin-only nav items
 if (role !== 'admin') {
   document.querySelectorAll('.admin-only').forEach(el => el.remove());
 }
 
-// ================= ELEMENTS =================
+//ELEMENTS
 const form             = document.getElementById('ingredient-form');
 const breadForm        = document.getElementById('bread-form');
 const recipeForm       = document.getElementById('recipe-form');
@@ -35,14 +35,14 @@ const breadList        = document.getElementById('bread-list');
 const recipeList       = document.getElementById('recipe-list');
 const batchList        = document.getElementById('batch-list');
 
-// ── Role guard — hide add-forms for staff ─────────────────────
+//Role guard — hide add-forms for staff
 if (role === 'staff') {
   [form, breadForm, recipeForm].forEach(f => {
     if (f) f.style.display = 'none';
   });
 }
 
-// ================= CONFIRM MODAL =================
+//CONFIRM MODAL
 const modal      = document.getElementById('confirm-modal');
 const confirmYes = document.getElementById('confirm-yes');
 const confirmNo  = document.getElementById('confirm-no');
@@ -66,7 +66,7 @@ confirmNo?.addEventListener('click', () => {
   confirmCallback = null;
 });
 
-// ================= TOAST =================
+//TOAST
 function showToast(message, type = 'success') {
   const container = document.getElementById('toast-container');
   if (!container) return;
@@ -83,7 +83,7 @@ function showToast(message, type = 'success') {
   }, 3000);
 }
 
-// ================= SAFE FETCH (with JWT) =================
+//SAFE FETCH (with JWT)
 async function safeFetch(url, options = {}) {
   const headers = {
     'Content-Type': 'application/json',
@@ -112,7 +112,7 @@ async function safeFetch(url, options = {}) {
   return data;
 }
 
-// ================= ACTIVITY LOG =================
+//ACTIVITY LOG
 async function logAction(action) {
   try {
     await fetch(`${API}/logs`, {
@@ -128,7 +128,7 @@ async function logAction(action) {
   }
 }
 
-// ================= HELPERS =================
+//HELPERS
 function formatDate(dateStr) {
   if (!dateStr) return '—';
   return new Date(dateStr).toLocaleDateString(undefined, {
@@ -144,9 +144,7 @@ function formatDateTime(dateStr) {
   });
 }
 
-// ================================================================
 //  INGREDIENTS
-// ================================================================
 form?.addEventListener('submit', async (e) => {
   e.preventDefault();
   try {
@@ -232,9 +230,7 @@ async function fetchIngredients() {
   });
 }
 
-// ================================================================
 //  BREAD
-// ================================================================
 breadForm?.addEventListener('submit', async (e) => {
   e.preventDefault();
   try {
@@ -311,9 +307,8 @@ async function fetchBreads() {
   });
 }
 
-// ================================================================
+
 //  RECIPES
-// ================================================================
 recipeForm?.addEventListener('submit', async (e) => {
   e.preventDefault();
   try {
@@ -381,9 +376,8 @@ async function fetchRecipes() {
   });
 }
 
-// ================================================================
+
 //  BATCH / PRODUCTION
-// ================================================================
 batchForm?.addEventListener('submit', async (e) => {
   e.preventDefault();
   try {
@@ -429,9 +423,8 @@ async function fetchBatches() {
   });
 }
 
-// ================================================================
+
 //  ACTIVITY LOGS
-// ================================================================
 async function fetchLogs() {
   const res  = await fetch(`${API}/logs`);
   const data = await res.json();
@@ -455,9 +448,8 @@ async function fetchLogs() {
   });
 }
 
-// ================================================================
+
 //  USERS (Admin only)
-// ================================================================
 const addUserForm = document.getElementById('add-user-form');
 
 addUserForm?.addEventListener('submit', async (e) => {
@@ -519,9 +511,8 @@ async function fetchUsers() {
 window.fetchLogs  = fetchLogs;
 window.fetchUsers = fetchUsers;
 
-// ================================================================
+
 //  INIT
-// ================================================================
 fetchIngredients();
 fetchBreads();
 fetchRecipes();

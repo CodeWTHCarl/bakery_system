@@ -9,7 +9,7 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* ── STAGE ─────────────────────────────────────────────────── */
+    /*STAGE*/
     body {
       min-height: 100vh;
       display: flex;
@@ -21,7 +21,7 @@
       position: relative;
     }
 
-    /* Animated aurora orbs */
+   
     .orb {
       position: fixed;
       border-radius: 50%;
@@ -53,7 +53,7 @@
       to   { transform: scale(1.15) translate(20px, -20px); opacity: 1; }
     }
 
-    /* Subtle grid overlay */
+    
     body::before {
       content: '';
       position: fixed;
@@ -66,7 +66,7 @@
       z-index: 0;
     }
 
-    /* ── CARD ───────────────────────────────────────────────────── */
+    /*CARD*/
     .card {
       position: relative;
       z-index: 1;
@@ -87,7 +87,7 @@
       to   { opacity: 1; transform: translateY(0) scale(1); }
     }
 
-    /* ── HEADER ─────────────────────────────────────────────────── */
+    /*HEADER*/
     .card-header {
       text-align: center;
       margin-bottom: 38px;
@@ -134,7 +134,7 @@
       font-weight: 300;
     }
 
-    /* Decorative divider */
+    /* Decorative divider*/
     .divider {
       display: flex;
       align-items: center;
@@ -152,8 +152,7 @@
       opacity: 0.4;
     }
 
-    /* ── FORM ───────────────────────────────────────────────────── */
-
+    /*FORM*/
     /* Floating label field */
     .field {
       position: relative;
@@ -354,7 +353,7 @@
       max-height: 80px;
     }
 
-    /* ── FOOTER ─────────────────────────────────────────────────── */
+    /*FOOTER*/
     .card-footer {
       margin-top: 32px;
       text-align: center;
@@ -367,7 +366,7 @@
       letter-spacing: 0.3px;
     }
 
-    /* ── RESPONSIVE ─────────────────────────────────────────────── */
+    /*RESPONSIVE */
     @media (max-width: 480px) {
       .card { padding: 40px 28px 36px; border-radius: 20px; margin: 16px; }
     }
@@ -441,13 +440,13 @@
   </div>
 
   <script>
-    // ── AUTO-REDIRECT IF ALREADY LOGGED IN ──────────────────────
+    //AUTO-REDIRECT IF ALREADY LOGGED IN
     const token = localStorage.getItem('token');
     if (token) {
       window.location.href = '/index.html';
     }
 
-    // ── PASSWORD TOGGLE ──────────────────────────────────────────
+    //PASSWORD TOGGLE
     function togglePassword() {
       const input = document.getElementById('password');
       const icon  = document.getElementById('pw-icon');
@@ -456,12 +455,12 @@
       icon.textContent = isHidden ? '🙈' : '👁';
     }
 
-    // ── ENTER KEY SUPPORT ────────────────────────────────────────
+    //ENTER KEY SUPPORT 
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') login();
     });
 
-    // ── LOGIN ────────────────────────────────────────────────────
+    //LOGIN
     async function login() {
       const username  = document.getElementById('username').value.trim();
       const password  = document.getElementById('password').value;
@@ -496,7 +495,7 @@
           return;
         }
 
-        // ── Store token and role ─────────────────────────────────
+        //Store token and role
         const storage = remember ? localStorage : sessionStorage;
         storage.setItem('token',    data.token);
         storage.setItem('role',     data.role);

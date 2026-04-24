@@ -10,9 +10,7 @@
 
 <div class="container">
 
-  <!-- ════════════════════════════════
-       SIDEBAR
-  ════════════════════════════════ -->
+  <!--SIDEBAR-->
   <aside class="sidebar">
 
     <div class="sidebar-brand">
@@ -61,9 +59,7 @@
 
   </aside>
 
-  <!-- ════════════════════════════════
-       MAIN
-  ════════════════════════════════ -->
+  <!--MAIN-->
   <main class="main">
 
     <!-- DASHBOARD -->
@@ -233,7 +229,7 @@
   </div>
 </div>
 
-<!-- ── SECTION SWITCH ── -->
+<!--SECTION SWITCH-->
 <script>
 const sectionOrder = ['dashboard','ingredients','breads','recipes','batch','logs','users'];
 
@@ -250,7 +246,7 @@ function showSection(id) {
 }
 </script>
 
-<!-- ── ROLE ── -->
+<!--ROLE-->
 <script>
 const role = localStorage.getItem('role');
 if (role) {
@@ -258,7 +254,7 @@ if (role) {
 }
 </script>
 
-<!-- ── LOGOUT ── -->
+<!--LOGOUT-->
 <script>
 function logout() {
   localStorage.clear();
