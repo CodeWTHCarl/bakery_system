@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
 
-// ADD LOG
+//add logs
 router.post('/', (req, res) => {
   const { action, role } = req.body;
 
@@ -21,7 +21,7 @@ router.post('/', (req, res) => {
   });
 });
 
-// GET LOGS
+//get logs
 router.get('/', (req, res) => {
   const sql = `SELECT * FROM activity_logs ORDER BY created_at DESC`;
 

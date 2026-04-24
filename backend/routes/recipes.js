@@ -3,7 +3,7 @@ const router = express.Router();
 const db = require('../config/db');
 
 
-// ================= CREATE RECIPE =================
+// create recipe
 router.post('/', (req, res) => {
   const { bread_id, ingredient_id, quantity } = req.body;
 
@@ -31,7 +31,7 @@ router.post('/', (req, res) => {
   });
 });
 
-// ================= READ RECIPES =================
+//read recipes
 router.get('/', (req, res) => {
   const sql = `
     SELECT 

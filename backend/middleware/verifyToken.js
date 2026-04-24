@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'bakery-super-secret-key-change-in-production';
 
-// ── Verify JWT token from Authorization header ──────────────
+//Verify JWT token from Authorization header
 function verifyToken(req, res, next) {
   const authHeader = req.headers['authorization'];
   const token      = authHeader && authHeader.split(' ')[1]; // Bearer <token>
@@ -20,7 +20,7 @@ function verifyToken(req, res, next) {
   }
 }
 
-// ── Admin-only guard (use after verifyToken) ─────────────────
+//Admin-only guard (use after verifyToken)
 function requireAdmin(req, res, next) {
   if (req.user?.role !== 'admin') {
     return res.status(403).json({ error: 'Admin access required.' });

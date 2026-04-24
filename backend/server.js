@@ -7,11 +7,11 @@ const cors    = require('cors');
 const app  = express();
 const PORT = process.env.PORT || 5000;
 
-// ================= MIDDLEWARE =================
+//middleware
 app.use(cors());
 app.use(express.json());
 
-// ================= ROUTES =================
+//routes
 const ingredientRoutes  = require('./routes/ingredients');
 const breadCatalogRoutes= require('./routes/breadCatalog');
 const recipeRoutes      = require('./routes/recipes');
@@ -28,12 +28,12 @@ app.use('/api/auth',        authRoutes);
 app.use('/api/logs',        activityRoutes);
 app.use('/api/users',       userRoutes);                 // NEW
 
-// ================= HEALTH CHECK =================
+//health checkk
 app.get('/', (req, res) => {
   res.json({ message: 'Bakery API is running ✅', version: '2.0' });
 });
 
-// ================= START =================
+//start
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

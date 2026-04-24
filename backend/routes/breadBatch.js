@@ -3,11 +3,11 @@ const router = express.Router();
 const db = require('../config/db');
 
 
-// ================= CREATE BATCH (SAFE AUTO-DEDUCT) =================
+//create batch(safe auto-deduct)
 router.post('/', (req, res) => {
   const { bread_id, quantity, baking_date, expiry_date, status } = req.body;
 
-  // 1️⃣ Get recipe first
+  // get recipe first
   const recipeSql = `
     SELECT r.ingredient_id, r.quantity, i.quantity_available, i.ingredient_name
     FROM recipe r
@@ -21,12 +21,12 @@ router.post('/', (req, res) => {
       return res.status(500).json({ error: 'Failed to fetch recipe' });
     }
 
-    // ❌ No recipe found
+    //no recipe found
     if (recipes.length === 0) {
       return res.status(400).json({ error: 'No recipe found for this bread' });
     }
 
-    // 2️⃣ CHECK STOCK FIRST
+    //check stock firstt
     for (let item of recipes) {
       const totalNeeded = item.quantity * quantity;
 
@@ -37,7 +37,7 @@ router.post('/', (req, res) => {
       }
     }
 
-    // 3️⃣ INSERT BATCH ONLY IF STOCK IS OK
+    // insert batch only if stock is okay
     const insertBatchSql = `
       INSERT INTO bread_batch (bread_id, quantity, baking_date, expiry_date, status)
       VALUES (?, ?, ?, ?, ?)
@@ -49,7 +49,7 @@ router.post('/', (req, res) => {
         return res.status(500).json({ error: 'Failed to insert batch' });
       }
 
-      // 4️⃣ DEDUCT INGREDIENTS (SAFE)
+      //deduct ingredients (safe)
       recipes.forEach(item => {
         const totalUsed = item.quantity * quantity;
 
@@ -70,7 +70,7 @@ router.post('/', (req, res) => {
 });
 
 
-// ================= READ BATCHES =================
+//read batches
 router.get('/', (req, res) => {
   const sql = `
     SELECT 

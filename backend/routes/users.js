@@ -3,9 +3,8 @@ const router  = express.Router();
 const db      = require('../config/db');
 const { verifyToken, requireAdmin } = require('../middleware/verifyToken');
 
-// ================================================================
+
 //  GET /api/users  — List all users (admin only)
-// ================================================================
 router.get('/', verifyToken, requireAdmin, (req, res) => {
   const sql = 'SELECT user_id, username, role FROM users ORDER BY user_id ASC';
 
@@ -18,9 +17,8 @@ router.get('/', verifyToken, requireAdmin, (req, res) => {
   });
 });
 
-// ================================================================
+
 //  DELETE /api/users/:id  — Remove a user (admin only, not self)
-// ================================================================
 router.delete('/:id', verifyToken, requireAdmin, (req, res) => {
   const targetId = parseInt(req.params.id);
 

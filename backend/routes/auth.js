@@ -8,9 +8,9 @@ const { verifyToken, requireAdmin } = require('../middleware/verifyToken');
 const JWT_SECRET  = process.env.JWT_SECRET || 'bakery-super-secret-key-change-in-production';
 const SALT_ROUNDS = 10;
 
-// ================================================================
-//  POST /api/auth/login
-// ================================================================
+
+//POST /api/auth/login
+
 router.post('/login', (req, res) => {
   const { username, password } = req.body;
 
@@ -32,7 +32,7 @@ router.post('/login', (req, res) => {
 
     const user = results[0];
 
-    // ── Support BOTH bcrypt hashed AND plain-text passwords ──────
+    //Support BOTH bcrypt hashed AND plain-text passwords
     // (Handles existing plain-text accounts during migration period)
     let isValid = false;
     const isBcrypt = user.password.startsWith('$2a$') || user.password.startsWith('$2b$');
@@ -54,7 +54,7 @@ router.post('/login', (req, res) => {
       return res.status(401).json({ error: 'Invalid username or password.' });
     }
 
-    // ── Issue JWT token ──────────────────────────────────────────
+    //Issue JWT token
     const token = jwt.sign(
       { id: user.user_id, username: user.username, role: user.role },
       JWT_SECRET,
@@ -70,9 +70,8 @@ router.post('/login', (req, res) => {
   });
 });
 
-// ================================================================
+
 //  POST /api/auth/register  (Admin only — protected route)
-// ================================================================
 router.post('/register', verifyToken, requireAdmin, async (req, res) => {
   const { username, password, role } = req.body;
 
