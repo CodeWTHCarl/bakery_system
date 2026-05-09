@@ -2,86 +2,74 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Bakery System</title>
   <link rel="stylesheet" href="/src/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
 
+<button class="hamburger" id="hamburger" onclick="toggleSidebar()">☰</button>
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
 <div class="container">
 
-  <!--SIDEBAR-->
-  <aside class="sidebar">
-
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
       <div class="sidebar-brand-icon">🍞</div>
-      <div>
-        <h2>BakeFlow</h2>
-        <span>Bakery System</span>
-      </div>
+      <div><h2>Artisan</h2><span>Bakery System</span></div>
     </div>
 
-    <!-- Role + username badge -->
     <div class="sidebar-role">
       <span class="sidebar-role-label">Logged in as</span>
-      <span id="user-name" style="font-size:13px; color:white; font-weight:500; display:block; margin-bottom:2px;"></span>
+      <span id="user-name"></span>
       <span id="user-role"></span>
     </div>
 
     <ul>
-      <li onclick="showSection('dashboard')" class="active">
-        <span class="nav-icon">📊</span> Dashboard
-      </li>
-      <li onclick="showSection('ingredients')">
-        <span class="nav-icon">🌾</span> Ingredients
-      </li>
-      <li onclick="showSection('breads')">
-        <span class="nav-icon">🍞</span> Bread
-      </li>
-      <li onclick="showSection('recipes')">
-        <span class="nav-icon">📋</span> Recipes
-      </li>
-      <li onclick="showSection('batch')">
-        <span class="nav-icon">⚙️</span> Production
-      </li>
-      <li onclick="showSection('logs')">
-        <span class="nav-icon">📝</span> Logs
-      </li>
-      <!-- Admin only nav item -->
-      <li onclick="showSection('users')" class="admin-only">
-        <span class="nav-icon">👥</span> Users
-      </li>
+      <li onclick="showSection('dashboard')"   class="active"><span class="nav-icon">📊</span> Dashboard</li>
+      <li onclick="showSection('ingredients')"            ><span class="nav-icon">🌾</span> Ingredients</li>
+      <li onclick="showSection('breads')"                 ><span class="nav-icon">🍞</span> Bread</li>
+      <li onclick="showSection('recipes')"                ><span class="nav-icon">📋</span> Recipes</li>
+      <li onclick="showSection('batch')"                  ><span class="nav-icon">⚙️</span> Production</li>
+      <li onclick="showSection('suppliers')"              ><span class="nav-icon">🚚</span> Suppliers</li>
+      <li onclick="showSection('logs')"                   ><span class="nav-icon">📝</span> Logs</li>
+      <li onclick="showSection('users')" class="admin-only"><span class="nav-icon">👥</span> Users</li>
     </ul>
+
+    <div class="sidebar-controls">
+      <button class="dark-toggle" onclick="toggleDarkMode()">
+        <span class="dark-toggle-label"><span id="dark-icon">🌙</span> Dark Mode</span>
+        <div class="toggle-pill"></div>
+      </button>
+    </div>
 
     <div class="sidebar-logout">
       <button onclick="logout()">🚪 &nbsp;Logout</button>
     </div>
-
   </aside>
 
-  <!--MAIN-->
+  <!-- ══ MAIN ══ -->
   <main class="main">
 
     <!-- DASHBOARD -->
     <section id="dashboard" class="section">
       <h2 class="section-title">Dashboard</h2>
       <div id="stats">
-        <div class="card">
-          <h3>Total Ingredients</h3>
-          <p id="total-ingredients">0</p>
-        </div>
-        <div class="card highlight">
-          <h3>⚠ Low Stock</h3>
-          <p id="low-stock">0</p>
-        </div>
-        <div class="card">
-          <h3>Total Breads</h3>
-          <p id="total-breads">0</p>
-        </div>
-        <div class="card">
-          <h3>Total Batches</h3>
-          <p id="total-batches">0</p>
-        </div>
+        <div class="card"><h3>Total Ingredients</h3><p id="total-ingredients">—</p></div>
+        <div class="card highlight"><h3>⚠ Low Stock</h3><p id="low-stock">—</p></div>
+        <div class="card"><h3>Total Breads</h3><p id="total-breads">—</p></div>
+        <div class="card"><h3>Total Batches</h3><p id="total-batches">—</p></div>
+      </div>
+      <div class="charts-row">
+        <div class="chart-card"><h3>📦 Batch Production</h3><div class="chart-wrap"><canvas id="batchChart"></canvas></div></div>
+        <div class="chart-card"><h3>🌾 Stock Health</h3><div class="chart-wrap"><canvas id="stockChart"></canvas></div></div>
+      </div>
+      <div class="card" id="low-stock-card" style="display:none;">
+        <h3>⚠️ Low Stock Alerts</h3>
+        <div class="low-stock-list" id="low-stock-list"></div>
       </div>
     </section>
 
@@ -90,17 +78,39 @@
       <h2 class="section-title">Ingredients</h2>
       <div class="card">
         <h3>Add Ingredient</h3>
-        <form id="ingredient-form">
-          <input type="text"   id="name"     placeholder="Ingredient name"  required />
-          <input type="number" id="quantity" placeholder="Quantity"         required />
-          <input type="text"   id="unit"     placeholder="Unit (kg, g, L…)" required />
+        <form id="ingredient-form" style="margin-bottom:14px;">
+          <div class="form-group" style="flex:2;min-width:200px;">
+            <label>Quick Select Predefined (optional)</label>
+            <select id="predefined-select"><option value="">— Choose predefined or fill manually below —</option></select>
+          </div>
+        </form>
+        <form id="ingredient-form-manual">
+          <div class="form-group"><label>Name *</label><input type="text" id="name" placeholder="e.g. All-Purpose Flour" required /></div>
+          <div class="form-group"><label>Quantity *</label><input type="number" id="quantity" placeholder="e.g. 10" step="0.01" min="0" required /></div>
+          <div class="form-group">
+            <label>Unit *</label>
+            <select id="unit">
+              <option value="g">g (grams)</option>
+              <option value="kg" selected>kg (kilograms)</option>
+              <option value="ml">ml (milliliters)</option>
+              <option value="L">L (liters)</option>
+              <option value="pcs">pcs (pieces)</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Cost per Unit (₱) *</label><input type="number" id="cost_per_unit" placeholder="e.g. 50.00" step="0.01" min="0" required /></div>
+          <div class="form-group"><label>Reorder Alert Level *</label><input type="number" id="reorder_level" placeholder="e.g. 5" step="0.01" min="0" required /></div>
+          <div class="form-group">
+            <label>Supplier (optional)</label>
+            <select id="supplier_id"><option value="">— No supplier —</option></select>
+          </div>
           <button type="submit">Add Ingredient</button>
         </form>
       </div>
       <div class="card">
         <h3>Ingredient List</h3>
+        <div class="search-wrap"><span class="search-icon">🔍</span><input class="search-input" id="search-ingredients" placeholder="Search ingredients…"/></div>
         <table>
-          <thead><tr><th>Name</th><th>Quantity</th><th>Unit</th><th>Actions</th></tr></thead>
+          <thead><tr><th>Name</th><th>Quantity</th><th>Unit</th><th>Cost/Unit (₱)</th><th>Reorder At</th><th>Status</th><th>Supplier</th><th>Actions</th></tr></thead>
           <tbody id="ingredient-list"></tbody>
         </table>
       </div>
@@ -113,15 +123,16 @@
         <h3>Add Bread</h3>
         <form id="bread-form">
           <input type="text"   id="bread_name" placeholder="Bread name" required />
-          <input type="text"   id="category"   placeholder="Category" />
-          <input type="number" id="price"       placeholder="Price"    required />
+          <input type="text"   id="category"   placeholder="Category (e.g. Pastry)" />
+          <input type="number" id="price"       placeholder="Selling Price (₱)" step="0.01" required />
           <button type="submit">Add Bread</button>
         </form>
       </div>
       <div class="card">
         <h3>Bread List</h3>
+        <div class="search-wrap"><span class="search-icon">🔍</span><input class="search-input" id="search-breads" placeholder="Search breads…"/></div>
         <table>
-          <thead><tr><th>Name</th><th>Category</th><th>Price</th><th>Actions</th></tr></thead>
+          <thead><tr><th>Name</th><th>Category</th><th>Selling Price (₱)</th><th>Cost to Make (₱)</th><th>Profit/Piece (₱)</th><th>Actions</th></tr></thead>
           <tbody id="bread-list"></tbody>
         </table>
       </div>
@@ -131,45 +142,103 @@
     <section id="recipes" class="section hidden">
       <h2 class="section-title">Recipes</h2>
       <div class="card">
-        <h3>Add Recipe</h3>
+        <h3>Add Recipe Ingredient</h3>
         <form id="recipe-form">
-          <select id="bread-select"></select>
-          <select id="ingredient-select"></select>
-          <input type="number" id="recipe-quantity" placeholder="Quantity" required />
-          <button type="submit">Add Recipe</button>
+          <div class="form-group"><label>Bread</label><select id="bread-select"></select></div>
+          <div class="form-group"><label>Ingredient</label><select id="ingredient-select"></select></div>
+          <div class="form-group"><label>Quantity Needed</label><input type="number" id="recipe-quantity" placeholder="e.g. 500" step="0.01" min="0" required /></div>
+          <div class="form-group">
+            <label>Unit</label>
+            <select id="recipe-unit">
+              <option value="g">g (grams)</option>
+              <option value="kg">kg (kilograms)</option>
+              <option value="ml">ml (milliliters)</option>
+              <option value="L">L (liters)</option>
+              <option value="pcs">pcs (pieces)</option>
+            </select>
+          </div>
+          <button type="submit">Add to Recipe</button>
         </form>
       </div>
       <div class="card">
-        <h3>Recipe List</h3>
-        <table>
-          <thead><tr><th>Bread</th><th>Ingredient</th><th>Quantity</th><th>Actions</th></tr></thead>
-          <tbody id="recipe-list"></tbody>
-        </table>
+        <h3>Recipe Book</h3>
+        <div class="search-wrap"><span class="search-icon">🔍</span><input class="search-input" id="search-recipes" placeholder="Search by bread name…"/></div>
+        <div id="recipe-list"></div>
       </div>
     </section>
 
     <!-- BATCH -->
     <section id="batch" class="section hidden">
       <h2 class="section-title">Production</h2>
+
+      <!-- Cost summary cards -->
+      <div class="cost-summary" id="batch-cost-summary" style="display:none;">
+        <div class="cost-card cost-type">
+          <div class="cost-card-label">Total Production Cost</div>
+          <div class="cost-card-value" id="summary-total-cost">₱0.00</div>
+        </div>
+        <div class="cost-card revenue-type">
+          <div class="cost-card-label">Total Potential Revenue</div>
+          <div class="cost-card-value" id="summary-total-revenue">₱0.00</div>
+        </div>
+        <div class="cost-card profit-type" id="summary-profit-card">
+          <div class="cost-card-label">Total Potential Profit</div>
+          <div class="cost-card-value" id="summary-total-profit">₱0.00</div>
+        </div>
+      </div>
+
       <div class="card">
         <h3>Record Batch</h3>
         <form id="batch-form">
-          <select id="batch-bread-select"></select>
-          <input type="number" id="batch-quantity" placeholder="Quantity"    required />
-          <input type="date"   id="baking-date"                             required />
-          <input type="date"   id="expiry-date"                             required />
-          <select id="status">
-            <option>Available</option>
-            <option>Sold</option>
-          </select>
+          <div class="form-group"><label>Bread</label><select id="batch-bread-select"></select></div>
+          <div class="form-group"><label>Quantity (loaves/pcs)</label><input type="number" id="batch-quantity" placeholder="e.g. 50" min="1" required /></div>
+          <div class="form-group"><label>Baking Date</label><input type="date" id="baking-date" required /></div>
+          <div class="form-group"><label>Expiry Date</label><input type="date" id="expiry-date" required /></div>
           <button type="submit">Record Batch</button>
         </form>
       </div>
+
       <div class="card">
         <h3>Batch Records</h3>
+        <div class="search-wrap"><span class="search-icon">🔍</span><input class="search-input" id="search-batch" placeholder="Search batch records…"/></div>
         <table>
-          <thead><tr><th>Bread</th><th>Qty</th><th>Baking Date</th><th>Expiry Date</th><th>Status</th></tr></thead>
+          <thead>
+            <tr>
+              <th>Bread</th>
+              <th>Qty</th>
+              <th>Baking Date</th>
+              <th>Expiry Date</th>
+              <th>Cost/Piece (₱)</th>
+              <th>Total Cost (₱)</th>
+              <th>Profit/Piece (₱)</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
           <tbody id="batch-list"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SUPPLIERS -->
+    <section id="suppliers" class="section hidden">
+      <h2 class="section-title">Suppliers</h2>
+      <div class="card">
+        <h3>Add Supplier</h3>
+        <form id="supplier-form">
+          <input type="text"  id="supplier_name"    placeholder="Supplier name *"  required />
+          <input type="text"  id="supplier_contact" placeholder="Contact number" />
+          <input type="email" id="supplier_email"   placeholder="Email address" />
+          <input type="text"  id="supplier_address" placeholder="Address" />
+          <button type="submit">Add Supplier</button>
+        </form>
+      </div>
+      <div class="card">
+        <h3>Supplier List</h3>
+        <div class="search-wrap"><span class="search-icon">🔍</span><input class="search-input" id="search-suppliers" placeholder="Search suppliers…"/></div>
+        <table>
+          <thead><tr><th>Name</th><th>Contact</th><th>Email</th><th>Address</th><th>Ingredients</th><th>Actions</th></tr></thead>
+          <tbody id="supplier-list"></tbody>
         </table>
       </div>
     </section>
@@ -179,6 +248,7 @@
       <h2 class="section-title">Activity Logs</h2>
       <div class="card">
         <h3>System Logs</h3>
+        <div class="search-wrap"><span class="search-icon">🔍</span><input class="search-input" id="search-logs" placeholder="Search logs…"/></div>
         <table>
           <thead><tr><th>Action</th><th>Role</th><th>Time</th></tr></thead>
           <tbody id="log-list"></tbody>
@@ -186,23 +256,18 @@
       </div>
     </section>
 
-    <!-- USERS (Admin only) -->
+    <!-- USERS -->
     <section id="users" class="section hidden">
       <h2 class="section-title">User Management</h2>
-
       <div class="card admin-only">
         <h3>Create New Account</h3>
         <form id="add-user-form">
-          <input type="text"     id="new-username" placeholder="Username"        required />
-          <input type="password" id="new-password" placeholder="Password (min 6 chars)" required />
-          <select id="new-role">
-            <option value="staff">Staff</option>
-            <option value="admin">Admin</option>
-          </select>
+          <input type="text"     id="new-username" placeholder="Username"         required />
+          <input type="password" id="new-password" placeholder="Password (min 6)" required />
+          <select id="new-role"><option value="staff">Staff</option><option value="admin">Admin</option></select>
           <button type="submit">Create User</button>
         </form>
       </div>
-
       <div class="card">
         <h3>System Users</h3>
         <table>
@@ -229,37 +294,55 @@
   </div>
 </div>
 
-<!--SECTION SWITCH-->
 <script>
-const sectionOrder = ['dashboard','ingredients','breads','recipes','batch','logs','users'];
+  const sectionOrder = ['dashboard','ingredients','breads','recipes','batch','suppliers','logs','users'];
 
-function showSection(id) {
-  document.querySelectorAll('.section').forEach(sec => sec.classList.add('hidden'));
-  document.getElementById(id)?.classList.remove('hidden');
+  function showSection(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
+    document.getElementById(id)?.classList.remove('hidden');
+    document.querySelectorAll('.sidebar li').forEach((li, i) => {
+      li.classList.toggle('active', sectionOrder[i] === id);
+    });
+    if (id === 'logs')      window.fetchLogs?.();
+    if (id === 'users')     window.fetchUsers?.();
+    if (id === 'suppliers') window.fetchSuppliers?.();
+    if (window.innerWidth <= 768) closeSidebar();
+  }
 
-  document.querySelectorAll('.sidebar li').forEach((li, i) => {
-    li.classList.toggle('active', sectionOrder[i] === id);
-  });
+  function toggleDarkMode() {
+    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    document.getElementById('dark-icon').textContent = next === 'dark' ? '☀️' : '🌙';
+    window.updateChartTheme?.();
+  }
 
-  if (id === 'logs')  window.fetchLogs?.();
-  if (id === 'users') window.fetchUsers?.();
-}
-</script>
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  if (savedTheme === 'dark') {
+    document.addEventListener('DOMContentLoaded', () => {
+      const icon = document.getElementById('dark-icon');
+      if (icon) icon.textContent = '☀️';
+    });
+  }
 
-<!--ROLE-->
-<script>
-const role = localStorage.getItem('role');
-if (role) {
-  document.getElementById('user-role').textContent = role.toUpperCase();
-}
-</script>
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebar-overlay').classList.toggle('active');
+  }
 
-<!--LOGOUT-->
-<script>
-function logout() {
-  localStorage.clear();
-  window.location.href = '/login.html';
-}
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebar-overlay').classList.remove('active');
+  }
+
+  const role     = localStorage.getItem('role');
+  const username = localStorage.getItem('username');
+  if (role)     document.getElementById('user-role').textContent = role.toUpperCase();
+  if (username) document.getElementById('user-name').textContent = username;
+  if (role !== 'admin') document.querySelectorAll('.admin-only').forEach(el => el.remove());
+
+  function logout() { localStorage.clear(); window.location.href = '/login.html'; }
 </script>
 
 <script type="module" src="/src/main.js"></script>
